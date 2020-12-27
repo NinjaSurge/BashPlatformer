@@ -1,0 +1,98 @@
+#!/bin/bash
+
+while getopts ":ht:nb:e:s:r" opt; do
+  case $opt in
+    h)
+    echo "Usage:
+ center [options] <stringToCenter>"
+    exit
+    ;;
+    t)
+    text="$OPTARG"
+    ;;
+    n)
+    newline=TRUE
+    ;;
+    b)
+    beginingPram=$OPTARG
+    ;;
+    e)
+    endPram=$OPTARG
+    ;;
+    s)
+    subtract=$OPTARG
+    ;;
+    r)
+    return=TRUE
+    ;;
+    \?)
+    echo "Invalid option: -$OPTARG" >&2
+    exit 1
+    ;;
+    :)
+    echo "Option -$OPTARG requires an argument." >&2
+    exit 1
+    ;;
+  esac
+done
+
+COLUMNS=$(tput cols)
+CENTER=$[COLUMNS/2]
+# echo $CENTER
+ROWS=$(tput lines)
+
+center() {
+  space=""
+  begining=$2
+  end=$3
+  length=${#1}
+  length=$[length-subtract]
+  length=$[length/2]
+  center=$[CENTER-length]
+  for ((i = 0; i <= $center; i++))
+  do
+    # echo $i
+    space=" ${space}"
+  done
+  echo -e "$space$begining$1$end"
+}
+
+centerf() {
+  space=""
+  begining=$2
+  end=$3
+  length=${#1}
+  length=$[length-subtract]
+  length=$[length/2]
+  center=$[CENTER-length]
+  for ((i = 0; i <= $center; i++))
+  do
+    # echo $i
+    space=" ${space}"
+  done
+  printf "$space$begining$1$end"
+}
+
+centerO() {
+  space=""
+  length=${#1}
+  length=$[length-subtract]
+  length=$[length/2]
+  center=$[CENTER-length]
+  for ((i = 0; i <= $center; i++))
+  do
+    # echo $i
+    space=" ${space}"
+  done
+  echo ${#space}
+}
+
+if [ "$newline" == "TRUE" ]
+then
+  center "$text" $beginingPram $endPram
+elif [ "$return" == "TRUE" ]
+then
+  centerO "$text"
+else
+  centerf "$text" $beginingPram $endPram
+fi
